@@ -91,11 +91,11 @@ bool Game::Initialize() {
 	guiFont = irr::gui::CGUITTFont::createTTFont(env, gameConf.textfont, gameConf.textfontsize);
 	textFont = guiFont;
 	smgr = device->getSceneManager();
-	device->setWindowCaption(L"YGOPro X");
+	device->setWindowCaption(L"Salvation Development");
 	device->setResizable(true);
 	//main menu
 	wchar_t strbuf[256];
-	myswprintf(strbuf, L"YGOPro X (Version:%X.0%X.%X)", PRO_VERSION >> 12, (PRO_VERSION >> 4) & 0xff, PRO_VERSION & 0xf);
+	myswprintf(strbuf, L"Salvation Development (Version:%X.0%X.%X)", PRO_VERSION >> 12, (PRO_VERSION >> 4) & 0xff, PRO_VERSION & 0xf);
 	wMainMenu = env->addWindow(rect<s32>(370, 200, 650, 450), false, strbuf);
 	wMainMenu->getCloseButton()->setVisible(false);
 	lastMenu = wMainMenu;
@@ -657,7 +657,7 @@ void Game::MainLoop() {
 			usleep(20000);
 #endif
 		if(cur_time >= 1000) {
-			myswprintf(cap, L"YGOPro X | FPS: %d", fps);
+			myswprintf(cap, L"Salvation Development | FPS: %d", fps);
 			device->setWindowCaption(cap);
 			fps = 0;
 			cur_time -= 1000;
