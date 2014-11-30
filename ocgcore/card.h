@@ -94,7 +94,7 @@ public:
 	query_cache q_cache;
 	uint8 owner;
 	uint8 summon_player;
-	uint32 summon_type;
+	uint32 summon_info;
 	uint32 status;
 	uint32 operation_param;
 	uint8 announce_count;
@@ -246,7 +246,7 @@ public:
 	int32 is_capable_be_effect_target(effect* peffect, uint8 playerid);
 	int32 is_can_be_fusion_material(uint8 ignore_mon = FALSE);
 	int32 is_can_be_synchro_material(card* scard, card* tuner = 0);
-	int32 is_can_be_xyz_material(card* scard);
+	int32 is_can_be_xyz_material(card* scard, uint8 ignore_xyz = FALSE);
 };
 
 //Locations
@@ -371,7 +371,7 @@ public:
 #define STATUS_TO_DISABLE			0x0004	//
 #define STATUS_PROC_COMPLETE		0x0008	//
 #define STATUS_SET_TURN				0x0010	//
-#define STATUS_FLIP_SUMMONED		0x0020	//
+#define STATUS_NO_LEVEL				0x0020	//
 #define STATUS_REVIVE_LIMIT			0x0040	//
 #define STATUS_ATTACKED				0x0080	//
 #define STATUS_FORM_CHANGED			0x0100	//
