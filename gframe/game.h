@@ -41,6 +41,7 @@ struct Config {
 	bool fullscreen;
 	wchar_t servername[30];
 	wchar_t serverip[20];
+	bool forced;
 };
 
 struct DuelInfo {

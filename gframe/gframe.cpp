@@ -26,16 +26,21 @@ int main(int argc, char* argv[]) {
 	for(int i = 1; i < argc; ++i) {
 		/*command line args:
 		 * -j: join host (host info from system.conf)
+		 * -f: forced join host (host info from system.conf, immediately set ready)
 		 * -d: deck edit
 		 * -r: replay */
 		if(argv[i][0] == '-' && argv[i][1] == 'e') {
 			ygo::dataManager.LoadDB(&argv[i][2]);
-		} else if(!strcmp(argv[i], "-j") || !strcmp(argv[i], "-d") || !strcmp(argv[i], "-r") || !strcmp(argv[i], "-s")) {
+		} else if(!strcmp(argv[i], "-j") || !strcmp(argv[i], "-f") || !strcmp(argv[i], "-d") || !strcmp(argv[i], "-r") || !strcmp(argv[i], "-s")) {
 			exit_on_return = true;
 			irr::SEvent event;
 			event.EventType = irr::EET_GUI_EVENT;
 			event.GUIEvent.EventType = irr::gui::EGET_BUTTON_CLICKED;
 			if(!strcmp(argv[i], "-j")) {
+				ygo::mainGame->wMainMenu->setVisible(false);
+				ygo::mainGame->menuHandler.OnJoinHost((wchar_t *)ygo::mainGame->ebJoinIP->getText(),_wtoi(ygo::mainGame->ebJoinPort->getText()));
+			} else if(!strcmp(argv[i], "-f")) {
+				ygo::mainGame->gameConf.forced = true;
 				ygo::mainGame->wMainMenu->setVisible(false);
 				ygo::mainGame->menuHandler.OnJoinHost((wchar_t *)ygo::mainGame->ebJoinIP->getText(),_wtoi(ygo::mainGame->ebJoinPort->getText()));
 			} else if(!strcmp(argv[i], "-d")) {

@@ -387,6 +387,30 @@ void DuelClient::HandleSTOCPacketLan(char* data, unsigned int len) {
 		connect_state |= 0x4;
 		mainGame->btnHostConfirm->setEnabled(true);
 		mainGame->btnHostCancel->setEnabled(true);
+
+		if(mainGame->gameConf.forced){
+			if(mainGame->cbDeckSelect->getSelected() == -1 ||
+					        !deckManager.LoadDeck(mainGame->cbDeckSelect->getItem(mainGame->cbDeckSelect->getSelected()))) {
+				return;
+			}
+			BufferIO::CopyWStr(mainGame->cbDeckSelect->getItem(mainGame->cbDeckSelect->getSelected()),
+					            mainGame->gameConf.lastdeck, 20);
+			char deckbuf[1024];
+			char* pdeck = deckbuf;
+			BufferIO::WriteInt32(pdeck, deckManager.current_deck.main.size() + deckManager.current_deck.extra.size());
+			BufferIO::WriteInt32(pdeck, deckManager.current_deck.side.size());
+			for(size_t i = 0; i < deckManager.current_deck.main.size(); ++i)
+				BufferIO::WriteInt32(pdeck, deckManager.current_deck.main[i]->first);
+			for(size_t i = 0; i < deckManager.current_deck.extra.size(); ++i)
+				BufferIO::WriteInt32(pdeck, deckManager.current_deck.extra[i]->first);
+			for(size_t i = 0; i < deckManager.current_deck.side.size(); ++i)
+				BufferIO::WriteInt32(pdeck, deckManager.current_deck.side[i]->first);
+			DuelClient::SendBufferToServer(CTOS_UPDATE_DECK, deckbuf, pdeck - deckbuf);
+			DuelClient::SendPacketToServer(CTOS_HS_READY);
+			mainGame->cbDeckSelect->setEnabled(false);
+			int selftype = (mainGame->chkHostPrepReady[0]->isEnabled())?0:1;
+			mainGame->chkHostPrepReady[selftype]->setChecked(true);
+		}
 		break;
 	}
 	case STOC_TYPE_CHANGE: {
@@ -1196,6 +1220,8 @@ int DuelClient::ClientAnalyze(char * msg, unsigned int len) {
 			ss = BufferIO::ReadInt8(pbuf);
 			desc = BufferIO::ReadInt32(pbuf);
 			pcard = mainGame->dField.GetCard(c, l, s, ss);
+			if (!pcard)
+				continue;
 			mainGame->dField.activatable_cards.push_back(pcard);
 			mainGame->dField.activatable_descs.push_back(desc);
 			pcard->is_selectable = true;
