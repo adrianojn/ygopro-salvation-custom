@@ -1013,12 +1013,14 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 					break;
 				}
 				case LOCATION_HAND: {
-					if(!clicked_card)
+					if (!clicked_card)
 						break;
 					int command_flag = clicked_card->cmdFlag;
-					if(clicked_card->overlayed.size())
+					if (clicked_card->overlayed.size())
 						command_flag |= COMMAND_LIST;
 					list_command = 0;
+					if (mainGame->canShuffle && mainGame->dInfo.curMsg == MSG_SELECT_IDLECMD)
+						command_flag |= COMMAND_SHUFFLE;
 					ShowMenu(command_flag, x, y);
 					break;
 				}
@@ -1383,8 +1385,8 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 					if(hovered_card->location == LOCATION_HAND && !mainGame->dInfo.is_shuffling && mainGame->dInfo.curMsg != MSG_SHUFFLE_HAND) {
 						hovered_card->is_hovered = false;
 						MoveCard(hovered_card, 5);
-						if(hovered_controler== 0)
-                            mainGame->hideChat=false;
+						if(hovered_controler == 0)
+							mainGame->hideChat = false;
 					}
 					if(hovered_card->equipTarget)
 						hovered_card->equipTarget->is_showequip = false;
@@ -1760,6 +1762,11 @@ void ClientField::ShowMenu(int flag, int x, int y) {
 		mainGame->btnShowList->setRelativePosition(position2di(1, height));
 		height += 21;
 	} else mainGame->btnShowList->setVisible(false);
+	if(flag & COMMAND_SHUFFLE) {
+		mainGame->btnShuffle->setVisible(true);
+		mainGame->btnShuffle->setRelativePosition(position2di(1, height));
+		height += 21;
+	} else mainGame->btnShuffle->setVisible(false);
 	panel = mainGame->wCmdMenu;
 	mainGame->wCmdMenu->setVisible(true);
 	position2di mouse = mainGame->Resize(x, y);

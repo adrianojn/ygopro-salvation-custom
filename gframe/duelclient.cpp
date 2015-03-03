@@ -389,8 +389,10 @@ void DuelClient::HandleSTOCPacketLan(char* data, unsigned int len) {
 		mainGame->btnHostCancel->setEnabled(true);
 
 		if(mainGame->gameConf.forced){
+								
 			if(mainGame->cbDeckSelect->getSelected() == -1 ||
 					        !deckManager.LoadDeck(mainGame->cbDeckSelect->getItem(mainGame->cbDeckSelect->getSelected()))) {
+		
 				return;
 			}
 			BufferIO::CopyWStr(mainGame->cbDeckSelect->getItem(mainGame->cbDeckSelect->getSelected()),
@@ -410,6 +412,13 @@ void DuelClient::HandleSTOCPacketLan(char* data, unsigned int len) {
 			mainGame->cbDeckSelect->setEnabled(false);
 			int selftype = (mainGame->chkHostPrepReady[0]->isEnabled())?0:1;
 			mainGame->chkHostPrepReady[selftype]->setChecked(true);
+
+				for(int i = 0; i < 4; ++i)
+			mainGame->chkHostPrepReady[i]->setVisible(false);
+
+
+
+		
 		}
 		break;
 	}
@@ -1034,7 +1043,7 @@ int DuelClient::ClientAnalyze(char * msg, unsigned int len) {
 			if (pcard->location == LOCATION_EXTRA)
 				mainGame->dField.extra_act = true;
 			if (pcard->location == LOCATION_SZONE && pcard->sequence == 6)
-				mainGame->dField.pzone_act = true;
+				mainGame->dField.pzone_act[pcard->controler] = true;
 		}
 		mainGame->dField.reposable_cards.clear();
 		count = BufferIO::ReadInt8(pbuf);
