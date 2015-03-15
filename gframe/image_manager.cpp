@@ -79,7 +79,6 @@ irr::video::ITexture* ImageManager::GetTexture(int code) {
 irr::video::ITexture* ImageManager::GetTextureThumb(int code) {
 	if(code == 0)
 		return tUnknown;
-	ScopedLock lk(mutex);
 	auto tit = tThumb.find(code);
 	if(tit == tThumb.end()) {
 		char file[256];

@@ -26,5 +26,5 @@ project "ygopro"
 			linkoptions { "-framework OpenGL", "-framework Cocoa", "-framework IOKit", "/usr/local/lib/libevent_pthreads.a" }
 			links { "dl", "pthread", "objc" } 
 		else
-			links { "event_pthreads", "GL", "dl", "pthread" } 
+			links { "event_pthreads", "GL", "dl", "pthread", "X11", "Xxf86vm" }
 		end
