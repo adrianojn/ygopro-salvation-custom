@@ -254,7 +254,7 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 				break;
 			}
 			case BUTTON_CMD_SHUFFLE: {
-				mainGame->wCmdMenu->setVisible(false);
+				mainGame->btnShuffle->setVisible(false);
 				DuelClient::SetResponseI(8);
 				DuelClient::SendResponse();
 				break;
@@ -495,6 +495,7 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 					DuelClient::SetResponseI(7);
 					DuelClient::SendResponse();
 				}
+				mainGame->btnShuffle->setVisible(false); //Hide between turns
 				break;
 			}
 			case BUTTON_CARD_0:
@@ -782,7 +783,9 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 				const wchar_t* pname = mainGame->ebANCard->getText();
 				int trycode = BufferIO::GetVal(pname);
 				CardString cstr;
-				if(dataManager.GetString(trycode, &cstr)) {
+				CardData cd;
+				if(dataManager.GetString(trycode, &cstr) && dataManager.GetData(trycode, &cd) 
+					&& !cd.alias && !((cd.type & (TYPE_MONSTER + TYPE_TOKEN)) == (TYPE_MONSTER + TYPE_TOKEN))) {
 					mainGame->lstANCard->clear();
 					ancard.clear();
 					mainGame->lstANCard->addItem(cstr.name);
@@ -796,7 +799,7 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 				for(auto cit = dataManager._strings.begin(); cit != dataManager._strings.end(); ++cit) {
 					if(DeckBuilder::CardNameCompare(cit->second.name, pname)) {
 						auto cp = dataManager.GetCodePointer(cit->first);
-						if(!cp->second.alias) {
+						if(!cp->second.alias && !((cp->second.type & (TYPE_MONSTER + TYPE_TOKEN)) == (TYPE_MONSTER + TYPE_TOKEN))) {
 							mainGame->lstANCard->addItem(cit->second.name);
 							ancard.push_back(cit->first);
 						}
@@ -813,7 +816,9 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 				const wchar_t* pname = mainGame->ebANCard->getText();
 				int trycode = BufferIO::GetVal(pname);
 				CardString cstr;
-				if(dataManager.GetString(trycode, &cstr)) {
+				CardData cd;
+				if(dataManager.GetString(trycode, &cstr) && dataManager.GetData(trycode, &cd) 
+					&& !cd.alias && !((cd.type & (TYPE_MONSTER + TYPE_TOKEN)) == (TYPE_MONSTER + TYPE_TOKEN))) {
 					mainGame->lstANCard->clear();
 					ancard.clear();
 					mainGame->lstANCard->addItem(cstr.name);
@@ -826,8 +831,11 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 				ancard.clear();
 				for(auto cit = dataManager._strings.begin(); cit != dataManager._strings.end(); ++cit) {
 					if(wcsstr(cit->second.name, pname) != 0) {
-						mainGame->lstANCard->addItem(cit->second.name);
-						ancard.push_back(cit->first);
+				auto cp = dataManager.GetCodePointer(cit->first);
+						if(!cp->second.alias && !((cp->second.type & (TYPE_MONSTER + TYPE_TOKEN)) == (TYPE_MONSTER + TYPE_TOKEN))) {
+							mainGame->lstANCard->addItem(cit->second.name);
+							ancard.push_back(cit->first);
+						}
 					}
 				}
 				break;
@@ -1012,18 +1020,7 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 					ShowMenu(command_flag, x, y);
 					break;
 				}
-				case LOCATION_HAND: {
-					if (!clicked_card)
-						break;
-					int command_flag = clicked_card->cmdFlag;
-					if (clicked_card->overlayed.size())
-						command_flag |= COMMAND_LIST;
-					list_command = 0;
-					if (mainGame->canShuffle && mainGame->dInfo.curMsg == MSG_SELECT_IDLECMD)
-						command_flag |= COMMAND_SHUFFLE;
-					ShowMenu(command_flag, x, y);
-					break;
-				}
+				case LOCATION_HAND: 
 				case LOCATION_MZONE:
 				case LOCATION_SZONE: {
 					if(!clicked_card)
@@ -1762,11 +1759,6 @@ void ClientField::ShowMenu(int flag, int x, int y) {
 		mainGame->btnShowList->setRelativePosition(position2di(1, height));
 		height += 21;
 	} else mainGame->btnShowList->setVisible(false);
-	if(flag & COMMAND_SHUFFLE) {
-		mainGame->btnShuffle->setVisible(true);
-		mainGame->btnShuffle->setRelativePosition(position2di(1, height));
-		height += 21;
-	} else mainGame->btnShuffle->setVisible(false);
 	panel = mainGame->wCmdMenu;
 	mainGame->wCmdMenu->setVisible(true);
 	position2di mouse = mainGame->Resize(x, y);
