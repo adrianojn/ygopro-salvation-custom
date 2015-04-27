@@ -40,7 +40,10 @@ public:
 	size_t pre_extrac;
 	size_t pre_sidec;
 	code_pointer draging_pointer;
-	
+	int toggle = 0;
+	const char* tcg = "tcg.cdb";
+	const char* ocg = "cards.cdb";
+
 	std::unordered_map<int, int>* filterList;
 	std::vector<code_pointer> results;
 	wchar_t result_string[8];

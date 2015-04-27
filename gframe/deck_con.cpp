@@ -16,6 +16,23 @@ bool DeckBuilder::OnEvent(const irr::SEvent& event) {
 		switch(event.GUIEvent.EventType) {
 		case irr::gui::EGET_BUTTON_CLICKED: {
 			switch(id) {
+			case BUTTON_TCG_COLLECTION: {
+				dataManager._strings.clear();
+				dataManager._datas.clear();
+				FilterStart();
+				if (toggle == 0)
+				{
+					dataManager.LoadDB(tcg);
+					toggle = 1;
+				}
+				else
+				{
+					dataManager.LoadDB(ocg);
+					toggle = 0;
+				}
+				FilterCards(true);
+				break;
+			}
 			case BUTTON_CLEAR_DECK: {
 				deckManager.current_deck.main.clear();
 				deckManager.current_deck.extra.clear();

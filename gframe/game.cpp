@@ -441,6 +441,7 @@ bool Game::Initialize() {
 	ebDeckname->setTextAlignment(irr::gui::EGUIA_CENTER, irr::gui::EGUIA_CENTER);
 	btnSaveDeckAs = env->addButton(rect<s32>(225, 65, 290, 90), wDeckEdit, BUTTON_SAVE_DECK_AS, dataManager.GetSysString(1303));
 	btnClearDeck = env->addButton(rect<s32>(240, 95, 290, 116), wDeckEdit, BUTTON_CLEAR_DECK, dataManager.GetSysString(1304));
+	btnTCG = env->addButton(rect<s32>(225, 5, 290, 30), wDeckEdit, BUTTON_TCG_COLLECTION, dataManager.GetSysString(1241));
 	btnSortDeck = env->addButton(rect<s32>(185, 95, 235, 116), wDeckEdit, BUTTON_SORT_DECK, dataManager.GetSysString(1305));
 	btnShuffleDeck = env->addButton(rect<s32>(130, 95, 180, 116), wDeckEdit, BUTTON_SHUFFLE_DECK, dataManager.GetSysString(1307));
 	btnDBExit = env->addButton(rect<s32>(10, 95, 90, 116), wDeckEdit, BUTTON_DBEXIT, dataManager.GetSysString(1306));
@@ -1184,6 +1185,7 @@ void Game::OnResize()
 	cbDBLFList->setRelativePosition(Resize(80, 5, 220, 30));
 	cbDBDecks->setRelativePosition(Resize(80, 35, 220, 60));
 	btnClearDeck->setRelativePosition(Resize(240, 95, 290, 116));
+	btnTCG->setRelativePosition(Resize(225, 5, 290, 30));
 	btnSortDeck->setRelativePosition(Resize(185, 95, 235, 116));
 	btnShuffleDeck->setRelativePosition(Resize(130, 95, 180, 116));
 	btnSaveDeck->setRelativePosition(Resize(225, 35, 290, 60));
