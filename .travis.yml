@@ -4,6 +4,8 @@ env:
   - LD_RUN_PATH=lib64
 
 before_install:
+  - sudo wget -q -O- http://archive.getdeb.net/getdeb-archive.key | sudo apt-key add -
+  - sudo sh -c "echo 'deb http://archive.getdeb.net/ubuntu/ precise-getdeb games' >> /etc/apt/sources.list"
   - sudo apt-get update -qq
   - sudo apt-get install -qq premake4 libfreetype6-dev libevent-dev libsqlite3-dev
   - sudo ln -s /usr/lib/x86_64-linux-gnu/liblua5.2.so /usr/lib/liblua.so
