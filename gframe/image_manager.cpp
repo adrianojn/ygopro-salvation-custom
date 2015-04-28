@@ -100,7 +100,6 @@ irr::video::ITexture* ImageManager::GetTextureThumb(int code) {
 irr::video::ITexture* ImageManager::GetTextureField(int code) {
 	if(code == 0)
 		return NULL;
-	ScopedLock lk(mutex);
 	auto tit = tFields.find(code);
 	if(tit == tFields.end()) {
 		char file[256];
