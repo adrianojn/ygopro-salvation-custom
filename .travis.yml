@@ -20,6 +20,18 @@ script:
   - premake4 gmake
   - make config=release -C build
 
+before_deploy:
+
 after_success:
-  - ldd bin/release/ygopro
+  - mkdir lib64
+  - cp bin/release/ygopro .
+  - cp bin/release/libocgcore.so lib64
+  - cp /lib/x86_64-linux-gnu/libpng12.so.0 lib64
+  - cp /usr/lib/libevent_core-2.0.so.5 lib64
+  - cp /usr/lib/libevent_pthreads-2.0.so.5 lib64
+  - cp /usr/lib/libirrKlang.so lib64
+  - cp /usr/lib/x86_64-linux-gnu/libIrrlicht.so.1.8 lib64
+  - cp /usr/lib/x86_64-linux-gnu/libfreetype.so.6 lib64
+  - cp /usr/lib/x86_64-linux-gnu/libjpeg.so.8 lib64
+  - ldd ygopro
 
