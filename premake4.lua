@@ -53,8 +53,8 @@ solution "ygo"
     include "gframe"   
 	include "lua"
 	include "sqlite3"
-    include "irrlicht"
     if os.is("windows") then
     include "event"
     include "freetype"
+    include "irrlicht"
     end
