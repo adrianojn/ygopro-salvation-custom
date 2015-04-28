@@ -21,8 +21,6 @@ script:
   - make config=release -C build
 
 before_deploy:
-
-after_success:
   - mkdir lib64
   - cp bin/release/ygopro .
   - cp bin/release/libocgcore.so lib64
@@ -34,4 +32,15 @@ after_success:
   - cp /usr/lib/x86_64-linux-gnu/libfreetype.so.6 lib64
   - cp /usr/lib/x86_64-linux-gnu/libjpeg.so.8 lib64
   - ldd ygopro
+
+deploy:
+  provider: releases
+  api_key:
+    secure: MJds1zsu7yWWcSu9B+MaVtVVw/ZeuOGUMUa812iVaHOHdfPRwq7PZh2vyz3yHonfzJ6bvk1CFx5jQTjtIfn7NlCtdYP8fZ6hiHh2lef+9eQOvQef3F3aB0jT4tpF7S4VsN9Y8A0djOHc7aamrP+d9GvadznRF6VvME8x+Fl4sCg=
+  file:
+    - ygopro
+    - lib64/libocgcore.so
+  on:
+    repo: adrianojn/ygopro-salvation-custom
+    branch: builder
 
