@@ -1,1 +1,17 @@
 language: cpp
+env:
+  - LD_RUN_PATH=lib64
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libfreetype6-dev libevent-dev libsqlite3-dev
+  - sudo ln -s /usr/lib/x86_64-linux-gnu/liblua5.2.so /usr/lib/liblua.so
+  - wget http://www.ambiera.at/downloads/irrKlang-64bit-1.5.0.zip
+  - unzip irrKlang-64bit-1.5.0.zip
+  - ln -s irrKlang-64bit-1.5.0 irrKlang-1.5.0
+  - sudo cp irrKlang-64bit-1.5.0/bin/linux-gcc-64/libIrrKlang.so /usr/lib/libirrKlang.so
+install:
+  - premake4 gmake
+  - make config=release ocgcore -C build
+after_success:
+  - ldd bin/release/ygopro
+
