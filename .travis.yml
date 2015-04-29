@@ -21,9 +21,12 @@ script:
   - make config=release -C build
 
 after_success:
+  - ldd bin/release/ygopro
+
+before_deploy:
   - mkdir lib64
   - strip bin/release/*
-  - cp bin/release/ygopro .
+  - cp bin/release/ygopro application_ygopro64
   - cp bin/release/libocgcore.so lib64
   - cp irrKlang-64bit-1.5.0/bin/linux-gcc-64/ikpMP3.so ikpMP3-64.so
   - cp /lib/x86_64-linux-gnu/libpng12.so.0 lib64
@@ -33,27 +36,14 @@ after_success:
   - cp /usr/lib/x86_64-linux-gnu/libIrrlicht.so.1.8 lib64
   - cp /usr/lib/x86_64-linux-gnu/libfreetype.so.6 lib64
   - cp /usr/lib/x86_64-linux-gnu/libjpeg.so.8 lib64
-  - ldd ygopro
+  - tar cvzf linux64.tgz application_ygopro64 ikpMP3-64.so lib64
 
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
     secure: MJds1zsu7yWWcSu9B+MaVtVVw/ZeuOGUMUa812iVaHOHdfPRwq7PZh2vyz3yHonfzJ6bvk1CFx5jQTjtIfn7NlCtdYP8fZ6hiHh2lef+9eQOvQef3F3aB0jT4tpF7S4VsN9Y8A0djOHc7aamrP+d9GvadznRF6VvME8x+Fl4sCg=
-  file:
-    - ygopro
-    - ikpMP3-64.so
-    - lib64/libocgcore.so
-    - lib64/libpng12.so.0
-    - lib64/libevent_core-2.0.so.5
-    - lib64/libevent_pthreads-2.0.so.5
-    - lib64/libirrKlang.so
-    - lib64/libIrrlicht.so.1.8
-    - lib64/libfreetype.so.6
-    - lib64/libjpeg.so.8
-  on:
-    repo: adrianojn/ygopro-salvation-custom
-    branch: builder
+  file: linux64.tgz
   on:
     tags: true
 
