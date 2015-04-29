@@ -1,5 +1,5 @@
 project "ocgcore"
-    kind "SharedLib"
+    kind "StaticLib"
 
     files { "**.cc", "**.cpp", "**.c", "**.h" }
     configuration "windows"
