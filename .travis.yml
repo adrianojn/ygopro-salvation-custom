@@ -54,4 +54,6 @@ deploy:
   on:
     repo: adrianojn/ygopro-salvation-custom
     branch: builder
+  on:
+    tags: true
 
