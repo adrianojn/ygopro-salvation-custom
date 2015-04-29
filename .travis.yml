@@ -29,12 +29,14 @@ before_deploy:
   - cp bin/release/ygopro application_ygopro64
   - cp irrKlang-64bit-1.5.0/bin/linux-gcc-64/ikpMP3.so ikpMP3-64.so
   - cp /lib/x86_64-linux-gnu/libpng12.so.0 lib64
-  - cp /usr/lib/libevent_core-2.0.so.5 lib64
-  - cp /usr/lib/libevent_pthreads-2.0.so.5 lib64
   - cp /usr/lib/libirrKlang.so lib64
   - cp /usr/lib/x86_64-linux-gnu/libIrrlicht.so.1.8 lib64
+  - cp /usr/lib/x86_64-linux-gnu/libevent-2.0.so.5
+  - cp /usr/lib/x86_64-linux-gnu/libevent_core-2.0.so.5 lib64
+  - cp /usr/lib/x86_64-linux-gnu/libevent_pthreads-2.0.so.5 lib64
   - cp /usr/lib/x86_64-linux-gnu/libfreetype.so.6 lib64
   - cp /usr/lib/x86_64-linux-gnu/libjpeg.so.8 lib64
+  - ldd ygopro
   - tar cvzf linux64.tgz application_ygopro64 ikpMP3-64.so lib64
 
 deploy:
