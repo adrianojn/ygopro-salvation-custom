@@ -374,7 +374,6 @@ public:
 	irr::gui::IGUIComboBox* cbDBLFList;
 	irr::gui::IGUIComboBox* cbDBDecks;
 	irr::gui::IGUIButton* btnClearDeck;
-	irr::gui::IGUIButton* btnTCG;
 	irr::gui::IGUIButton* btnSortDeck;
 	irr::gui::IGUIButton* btnShuffleDeck;
 	irr::gui::IGUIButton* btnClearFilter;
@@ -533,7 +532,6 @@ extern Game* mainGame;
 #define COMBOBOX_MAINTYPE			310
 #define BUTTON_EFFECT_FILTER		311
 #define BUTTON_START_FILTER			312
-#define BUTTON_TCG_COLLECTION		313
 #define SCROLL_FILTER				314
 #define EDITBOX_KEYWORD				315
 #define EDITBOX_NICKNAME_LAN		316
