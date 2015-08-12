@@ -34,6 +34,7 @@ struct card_data {
 
 struct card_state {
 	uint32 code;
+	uint32 code2;
 	uint32 type;
 	uint32 level;
 	uint32 rank;
@@ -108,6 +109,9 @@ public:
 	uint8 unique_pos[2];
 	uint16 unique_uid;
 	uint32 unique_code;
+	uint32 spsummon_code;
+	uint16 spsummon_counter[2];
+	uint16 spsummon_counter_rst[2];
 	uint8 assume_type;
 	uint32 assume_value;
 	effect* unique_effect;
@@ -131,7 +135,7 @@ public:
 	effect_relation relate_effect;
 	effect_set_v immune_effect;
 
-	card();
+	explicit card(duel* pd);
 	~card();
 	static bool card_operation_sort(card* c1, card* c2);
 
@@ -142,14 +146,15 @@ public:
 	int32 is_set_card(uint32 set_code);
 	uint32 get_type();
 	int32 get_base_attack(uint8 swap = FALSE);
-	int32 get_attack(uint8 swap = FALSE);
+	int32 get_attack();
 	int32 get_base_defence(uint8 swap = FALSE);
-	int32 get_defence(uint8 swap = FALSE);
+	int32 get_defence();
+	void calc_attack_defence(int32 *patk, int32 *pdef);
 	uint32 get_level();
 	uint32 get_rank();
 	uint32 get_synchro_level(card* pcard);
 	uint32 get_ritual_level(card* pcard);
-	uint32 is_xyz_level(card* pcard, uint32 lv);
+	uint32 check_xyz_level(card* pcard, uint32 lv);
 	uint32 get_attribute();
 	uint32 get_race();
 	uint32 get_lscale();
@@ -195,33 +200,36 @@ public:
 	void cancel_card_target(card* pcard);
 	
 	void filter_effect(int32 code, effect_set* eset, uint8 sort = TRUE);
+	void filter_single_effect(int32 code, effect_set* eset, uint8 sort = TRUE);
 	void filter_single_continuous_effect(int32 code, effect_set* eset, uint8 sort = TRUE);
 	void filter_immune_effect();
 	void filter_disable_related_cards();
-	int32 filter_summon_procedure(uint8 playerid, effect_set* eset, uint8 ignore_count);
-	int32 filter_set_procedure(uint8 playerid, effect_set* eset, uint8 ignore_count);
-	void filter_spsummon_procedure(uint8 playerid, effect_set* eset);
+	int32 filter_summon_procedure(uint8 playerid, effect_set* eset, uint8 ignore_count, uint8 min_tribute);
+	int32 filter_set_procedure(uint8 playerid, effect_set* eset, uint8 ignore_count, uint8 min_tribute);
+	void filter_spsummon_procedure(uint8 playerid, effect_set* eset, uint32 summon_type);
 	void filter_spsummon_procedure_g(uint8 playerid, effect_set* eset);
 	effect* is_affected_by_effect(int32 code);
 	effect* is_affected_by_effect(int32 code, card* target);
-	effect* check_equip_control_effect();
+	effect* check_control_effect();
 	int32 fusion_check(group* fusion_m, card* cg, int32 chkf);
 	void fusion_select(uint8 playerid, group* fusion_m, card* cg, int32 chkf);
 	
 	int32 is_equipable(card* pcard);
 	int32 is_summonable();
 	int32 is_summonable(effect* peffect);
-	int32 is_can_be_summoned(uint8 playerid, uint8 ingore_count, effect* peffect);
-	int32 get_summon_tribute_count(uint8 ignore_count = 0);
+	int32 is_summonable(effect* peffect, uint8 min_tribute);
+	int32 is_can_be_summoned(uint8 playerid, uint8 ingore_count, effect* peffect, uint8 min_tribute);
+	int32 get_summon_tribute_count();
 	int32 get_set_tribute_count();
 	int32 is_can_be_flip_summoned(uint8 playerid);
-	int32 is_special_summonable(uint8 playerid);
+	int32 is_special_summonable(uint8 playerid, uint32 summon_type);
 	int32 is_can_be_special_summoned(effect* reason_effect, uint32 sumtype, uint8 sumpos, uint8 sumplayer, uint8 toplayer, uint8 nocheck, uint8 nolimit);
-	int32 is_setable_mzone(uint8 playerid, uint8 ignore_count, effect* peffect);
+	int32 is_setable_mzone(uint8 playerid, uint8 ignore_count, effect* peffect, uint8 min_tribute);
 	int32 is_setable_szone(uint8 playerid, uint8 ignore_fd = 0);
 	int32 is_affect_by_effect(effect* peffect);
 	int32 is_destructable();
 	int32 is_destructable_by_battle(card* pcard);
+	effect* check_indestructable_by_effect(effect* peffect, uint8 playerid);
 	int32 is_destructable_by_effect(effect* peffect, uint8 playerid);
 	int32 is_removeable(uint8 playerid);
 	int32 is_removeable_as_cost(uint8 playerid);
@@ -246,7 +254,8 @@ public:
 	int32 is_capable_be_effect_target(effect* peffect, uint8 playerid);
 	int32 is_can_be_fusion_material(uint8 ignore_mon = FALSE);
 	int32 is_can_be_synchro_material(card* scard, card* tuner = 0);
-	int32 is_can_be_xyz_material(card* scard, uint8 ignore_xyz = FALSE);
+	int32 is_can_be_ritual_material(card* scard);
+	int32 is_can_be_xyz_material(card* scard);
 };
 
 //Locations
@@ -365,6 +374,7 @@ public:
 #define SUMMON_TYPE_RITUAL	0x45000000
 #define SUMMON_TYPE_SYNCHRO	0x46000000
 #define SUMMON_TYPE_XYZ		0x49000000
+#define SUMMON_TYPE_PENDULUM	0x4a000000
 //Status
 #define STATUS_DISABLED				0x0001	//
 #define STATUS_TO_ENABLE			0x0002	//
@@ -373,7 +383,7 @@ public:
 #define STATUS_SET_TURN				0x0010	//
 #define STATUS_NO_LEVEL				0x0020	//
 #define STATUS_REVIVE_LIMIT			0x0040	//
-#define STATUS_ATTACKED				0x0080	//
+#define STATUS_SPSUMMON_STEP		0x0080	//
 #define STATUS_FORM_CHANGED			0x0100	//
 #define STATUS_SUMMONING			0x0200	//
 #define STATUS_EFFECT_ENABLED		0x0400	//
@@ -394,6 +404,8 @@ public:
 #define STATUS_CONTINUOUS_POS		0x2000000
 #define STATUS_IS_PUBLIC			0x4000000
 #define STATUS_ACT_FROM_HAND		0x8000000
+#define STATUS_OPPO_BATTLE			0x10000000
+#define STATUS_FLIP_SUMMON_TURN		0x20000000
 //Counter
 #define COUNTER_NEED_PERMIT		0x1000
 #define COUNTER_NEED_ENABLE		0x2000
