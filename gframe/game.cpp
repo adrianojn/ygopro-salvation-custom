@@ -870,6 +870,7 @@ void Game::LoadConfig() {
 	gameConf.soundvolume = 1.0;
 	gameConf.skin_index = -1;
 	gameConf.fullscreen = false;
+	gameConf.forced = false;
 	FILE* fp = fopen("system.conf", "r");
 	if(!fp)
 		return;
