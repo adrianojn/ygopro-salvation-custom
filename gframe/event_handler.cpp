@@ -1539,7 +1539,7 @@ bool ClientField::OnEvent(const irr::SEvent& event) {
 
 			if (mainGame->dInfo.isSingleMode)
 				break;
-		
+
 			CTOS_HandResult cshr;
 			cshr.res = event.KeyInput.PressedDown;
 			DuelClient::SendPacketToServer(CTOS_FORCE_CHAIN, cshr);

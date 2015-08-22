@@ -1875,6 +1875,7 @@ int DuelClient::ClientAnalyze(char * msg, unsigned int len) {
 		mainGame->btnBP->setVisible(false);
 		mainGame->btnM2->setVisible(false);
 		mainGame->btnEP->setVisible(false);
+		mainGame->btnShuffle->setVisible(false);
 		mainGame->showcarddif = 30;
 		mainGame->showcardp = 0;
 		switch (phase) {
@@ -3218,6 +3219,7 @@ void DuelClient::SendResponse() {
 		mainGame->dField.ClearCommandFlag();
 		mainGame->btnM2->setVisible(false);
 		mainGame->btnEP->setVisible(false);
+		mainGame->btnShuffle->setVisible(false);
 		break;
 	}
 	case MSG_SELECT_IDLECMD: {
