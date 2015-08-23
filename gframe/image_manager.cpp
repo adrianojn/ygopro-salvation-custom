@@ -1,4 +1,5 @@
 #include "image_manager.h"
+#include "game.h"
 
 namespace ygo {
 
@@ -61,7 +62,7 @@ irr::video::ITexture* ImageManager::GetTexture(int code) {
 	auto tit = tMap.find(code);
 	if(tit == tMap.end()) {
 		char file[256];
-		sprintf(file, "pics/%d.jpg", code);
+		sprintf(file, "%s/%d.jpg",mainGame->gameConf.pics, code);
 		irr::video::ITexture* img = driver->getTexture(file);
 		if(img == NULL) {
 			tMap[code] = NULL;
@@ -83,7 +84,7 @@ irr::video::ITexture* ImageManager::GetTextureThumb(int code) {
 	auto tit = tThumb.find(code);
 	if(tit == tThumb.end()) {
 		char file[256];
-		sprintf(file, "pics/thumbnail/%d.jpg", code);
+		sprintf(file, "%s/%d.jpg",mainGame->gameConf.thumbnails, code);
 		irr::video::ITexture* img = driver->getTexture(file);
 		if(img == NULL) {
 			tThumb[code] = NULL;

@@ -42,6 +42,9 @@ struct Config {
 	wchar_t servername[30];
 	wchar_t serverip[20];
 	bool forced;
+	char database[256];
+	char pics[256];
+	char thumbnails[256];
 };
 
 struct DuelInfo {
