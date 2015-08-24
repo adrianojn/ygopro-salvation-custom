@@ -25,6 +25,8 @@ int32 scriptlib::card_get_code(lua_State *L) {
 	}
 	return 1;
 }
+// GetOriginalCode(): get the original code printed on card
+// return: 1 int
 int32 scriptlib::card_get_origin_code(lua_State *L) {
 	check_param_count(L, 1);
 	check_param(L, PARAM_TYPE_CARD, 1);
@@ -37,6 +39,26 @@ int32 scriptlib::card_get_origin_code(lua_State *L) {
 			lua_pushinteger(L, pcard->data.code);
 	} else
 		lua_pushinteger(L, pcard->data.code);
+	return 1;
+}
+// GetOriginalCodeRule(): get the original code in duel (can be different from printed code)
+// return: 1-2 int
+int32 scriptlib::card_get_origin_code_rule(lua_State *L) {
+	check_param_count(L, 1);
+	check_param(L, PARAM_TYPE_CARD, 1);
+	card* pcard = *(card**) lua_touserdata(L, 1);
+	effect_set eset;
+	pcard->filter_effect(EFFECT_ADD_CODE, &eset);
+	if(pcard->data.alias && !eset.size())
+		lua_pushinteger(L, pcard->data.alias);
+	else {
+		lua_pushinteger(L, pcard->data.code);
+		if(eset.size()) {
+			uint32 otcode = eset.get_last()->get_value(pcard);
+			lua_pushinteger(L, otcode);
+			return 2;
+		}
+	}
 	return 1;
 }
 int32 scriptlib::card_is_set_card(lua_State *L) {
@@ -236,6 +258,10 @@ int32 scriptlib:: card_get_previous_code_onfield(lua_State *L) {
 	check_param(L, PARAM_TYPE_CARD, 1);
 	card* pcard = *(card**) lua_touserdata(L, 1);
 	lua_pushinteger(L, pcard->previous.code);
+	if(pcard->previous.code2) {
+		lua_pushinteger(L, pcard->previous.code2);
+		return 2;
+	}
 	return 1;
 }
 int32 scriptlib::card_get_previous_type_onfield(lua_State *L) {
@@ -448,11 +474,20 @@ int32 scriptlib::card_is_code(lua_State *L) {
 	check_param_count(L, 2);
 	check_param(L, PARAM_TYPE_CARD, 1);
 	card* pcard = *(card**) lua_touserdata(L, 1);
-	uint32 tcode = lua_tointeger(L, 2);
-	if(pcard->get_code() == tcode || pcard->get_another_code() == tcode)
-		lua_pushboolean(L, 1);
-	else
-		lua_pushboolean(L, 0);
+	uint32 code1 = pcard->get_code();
+	uint32 code2 = pcard->get_another_code();
+	uint32 count = lua_gettop(L) - 1;
+	uint32 result = FALSE;
+	for(uint32 i = 0; i < count; ++i) {
+		if(lua_isnil(L, i + 2))
+			continue;
+		uint32 tcode = lua_tointeger(L, i + 2);
+		if(code1 == tcode || (code2 && code2 == tcode)) {
+			result = TRUE;
+			break;
+		}
+	}
+	lua_pushboolean(L, result);
 	return 1;
 }
 int32 scriptlib::card_is_type(lua_State *L) {
@@ -503,7 +538,7 @@ int32 scriptlib::card_is_status(lua_State *L) {
 	check_param_count(L, 2);
 	check_param(L, PARAM_TYPE_CARD, 1);
 	card* pcard = *(card**) lua_touserdata(L, 1);
-	uint32 tstatus = lua_tointeger(L, 2);
+	uint32 tstatus = lua_tounsigned(L, 2);
 	if(pcard->status & tstatus)
 		lua_pushboolean(L, 1);
 	else
@@ -527,7 +562,7 @@ int32 scriptlib::card_set_status(lua_State *L) {
 	card* pcard = *(card**) lua_touserdata(L, 1);
 	if(pcard->status & STATUS_COPYING_EFFECT)
 		return 0;
-	uint32 tstatus = lua_tointeger(L, 2);
+	uint32 tstatus = lua_tounsigned(L, 2);
 	int32 enable = lua_toboolean(L, 3);
 	pcard->set_status(tstatus, enable);
 	return 0;
@@ -571,10 +606,13 @@ int32 scriptlib::card_get_turn_counter(lua_State *L) {
 int32 scriptlib::card_set_material(lua_State *L) {
 	check_param_count(L, 2);
 	check_param(L, PARAM_TYPE_CARD, 1);
-	check_param(L, PARAM_TYPE_GROUP, 2);
 	card* pcard = *(card**) lua_touserdata(L, 1);
-	group* pgroup = *(group**) lua_touserdata(L, 2);
-	pcard->set_material(&pgroup->container);
+	if(!lua_isnil(L, 2)) {
+		check_param(L, PARAM_TYPE_GROUP, 2);
+		group* pgroup = *(group**) lua_touserdata(L, 2);
+		pcard->set_material(&pgroup->container);
+	} else
+		pcard->set_material(0);
 	return 0;
 }
 int32 scriptlib::card_get_material(lua_State *L) {
@@ -1806,6 +1844,18 @@ int32 scriptlib::card_is_can_be_synchro_material(lua_State *L) {
 		tuner = *(card**) lua_touserdata(L, 3);
 	}
 	lua_pushboolean(L, pcard->is_can_be_synchro_material(scard, tuner));
+	return 1;
+}
+int32 scriptlib::card_is_can_be_ritual_material(lua_State *L) {
+	check_param_count(L, 2);
+	check_param(L, PARAM_TYPE_CARD, 1);
+	card* pcard = *(card**) lua_touserdata(L, 1);
+	card* scard = 0;
+	if(lua_gettop(L) >= 2 && !lua_isnil(L, 2)) {
+		check_param(L, PARAM_TYPE_CARD, 2);
+		scard = *(card**) lua_touserdata(L, 2);
+	}
+	lua_pushboolean(L, pcard->is_can_be_ritual_material(scard));
 	return 1;
 }
 int32 scriptlib::card_is_can_be_xyz_material(lua_State *L) {
