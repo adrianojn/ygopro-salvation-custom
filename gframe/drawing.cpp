@@ -866,11 +866,7 @@ void Game::DrawThumb(code_pointer cp, position2di pos, std::unordered_map<int, i
 	int lcode = cp->second.alias;
 	if(lcode == 0)
 		lcode = code;
-	irr::video::ITexture* img;
-	if (mainGame->window_size.Width > 1024 || mainGame->window_size.Height > 640)
-		img = imageManager.GetTexture(code);
-	else
-		img = imageManager.GetTextureThumb(code);
+	irr::video::ITexture* img = imageManager.GetTexture(code);
 	if(img == NULL)
 		return; //NULL->getSize() will cause a crash
 	dimension2d<u32> size = img->getOriginalSize();

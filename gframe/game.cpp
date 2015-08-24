@@ -80,7 +80,7 @@ bool Game::Initialize() {
 	imageManager.SetDevice(device);
 	if(!imageManager.Initial())
 		return false;
-	if(!dataManager.LoadDB("cards.cdb"))
+	if(!dataManager.LoadDB(gameConf.database))
 		return false;
 	if(!dataManager.LoadStrings("strings.conf"))
 		return false;
@@ -871,6 +871,9 @@ void Game::LoadConfig() {
 	gameConf.skin_index = -1;
 	gameConf.fullscreen = false;
 	gameConf.forced = false;
+	BufferIO::CopyWStr(L"cards.cdb", gameConf.database, 256);
+	BufferIO::CopyWStr(L"pics", gameConf.pics, 256);
+	BufferIO::CopyWStr(L"pics/thumbnail", gameConf.thumbnails, 256);
 	FILE* fp = fopen("system.conf", "r");
 	if(!fp)
 		return;
@@ -953,6 +956,15 @@ void Game::LoadConfig() {
 		} else if(!strcmp(strbuf,"serverip")) {
 			BufferIO::DecodeUTF8(valbuf, wstr);
 			BufferIO::CopyWStr(wstr, gameConf.serverip, 20);
+		} else if(!strcmp(strbuf,"database")) {
+			BufferIO::DecodeUTF8(valbuf, wstr);
+			BufferIO::CopyWStr(wstr, gameConf.database, 256);
+		} else if(!strcmp(strbuf,"pics")) {
+			BufferIO::DecodeUTF8(valbuf, wstr);
+			BufferIO::CopyWStr(wstr, gameConf.pics, 256);
+		} else if(!strcmp(strbuf,"thumbnails")) {
+			BufferIO::DecodeUTF8(valbuf, wstr);
+			BufferIO::CopyWStr(wstr, gameConf.thumbnails, 256);
 		}
 	}
 	fclose(fp);
